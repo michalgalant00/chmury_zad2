@@ -1,0 +1,56 @@
+name: GitHub Action Zadanie 2
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Buildx set-up
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver-opts: image=moby/buildkit:v0.11.0
+          buildkitd-flags: --debug
+
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # - name: Login to DockerHub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{secrets.DOCKERHUB_USERNAME}}
+      #     password: ${{secrets.DOCKERHUB_TOKEN}}
+
+      - name: Login to GHCR
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_TOKEN}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          platforms: linux/arm64/v8,linux/amd64
+          context: .
+          file: ./Dockerfile_prod
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/gha_lab10:zadv1
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
