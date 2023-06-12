@@ -46,11 +46,11 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          platforms: linux/arm64/v8,linux/amd64
+          platforms: linux/arm64/v8,x86_64
           context: .
-          file: ./Dockerfile_prod
+          file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/gha_lab10:zadv1
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+            ghcr.io/${{ github.repository_owner }}/chmury_zad2:v1
+          cache-from: type=registry, ref=ghcr.io/${{ github.repository_owner }}/chmury_zad2:v1
+          cache-to: type=inline
