@@ -55,7 +55,7 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/chmury_zad2:v1
           cache-to: type=inline
 
-      - name: snyk node
+      - name: Testing image with SNYK
         uses: snyk/actions/node@master
         id: snyk
         continue-on-error: true
