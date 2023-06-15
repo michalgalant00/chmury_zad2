@@ -126,11 +126,12 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/chmury_zad2:v1
           cache-to: type=inline
 
+  # zadanie test
   test:
     runs-on: ubuntu-latest
 
     steps:
-      # testowanie budowanego obrazu pod kątem CVE
+      # testowanie budowanego obrazu pod kątem CVE wykorzystując SNYK
       - name: Testing image with SNYK
         uses: snyk/actions/node@master
         id: snyk
