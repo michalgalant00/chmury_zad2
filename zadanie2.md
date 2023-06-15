@@ -1,3 +1,69 @@
+# chmury_zad2
+
+Rozwiązanie zadania 2 z technologii chmurowych.
+
+Michał Galant
+
+## 1. Działanie projektu
+
+### 1. Aplikacja
+
+![Działanie aplikacji](images/aplikacja.png)
+
+### 2. Łańcuch GitHub Actions
+
+![Działanie GitHub Actions](images/gha.png)
+
+### 3. Testowanie pod kątem CVE
+
+![Testy](images/test.png)
+
+## 2. Struktura plików
+
+### 1. App.js
+
+```js
+import logo from "./logo.svg";
+import "./App.css";
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>Michał Galant</p>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### 2. Dockerfile
+
+```dockerfile
+# na bazie obrazu node:alpine
+FROM node:alpine as builder
+# wprowadzenie zmiennej środowiskowej do obrazu
+ENV NODE_OPTIONS=--openssl-legacy-provider
+# ustawienie katalogu roboczego
+WORKDIR '/app'
+# sekcja z kopiowaniem i budowaniem projektu z zależnościami
+COPY package.json .
+RUN npm install
+COPY . .
+RUN npm run build
+
+# na bazie obrazu nginx wystawienie zbudowanej aplikacji
+FROM nginx
+EXPOSE 80
+COPY --from=builder /app/build /usr/share/nginx/html
+```
+
+### 3. Łańcuch GitHub Actions - plik gha_B.yml
+
+```yml
 name: GitHub Action Zadanie 2
 
 on:
@@ -71,3 +137,4 @@ jobs:
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+```
